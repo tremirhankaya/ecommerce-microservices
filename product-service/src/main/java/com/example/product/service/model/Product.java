@@ -21,18 +21,6 @@ public class Product {
     @Column(nullable = false)
     private
     BigDecimal price;
-
-    @Override
-    public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", price=" + price +
-                ", stock=" + stock +
-                '}';
-    }
-
     @Column(nullable = false)
     private
     int stock;

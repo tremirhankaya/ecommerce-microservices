@@ -23,7 +23,6 @@ public class ProductServiceApplication {
 	CommandLineRunner seedData(ProductService productService) {
 		return args -> {
 			System.out.println("---- Seeding sample products ----");
-
 			//Product product = new Product("Playstation","Gaming Console",BigDecimal.valueOf(499.99),100);
 //			productService.updateProduct(3L,product);
 //			productService.findById(3L);
