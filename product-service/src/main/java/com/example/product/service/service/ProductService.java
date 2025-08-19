@@ -1,0 +1,14 @@
+package com.example.product.service.service;
+
+import com.example.product.service.model.Product;
+
+import java.util.List;
+
+public interface ProductService {
+    Product findById(Long id);
+    Product createProduct(Product product);
+    Product updateProduct(Product updatedProduct);
+    void deleteProduct(Long id);
+    List<Product> findAll();
+
+}
