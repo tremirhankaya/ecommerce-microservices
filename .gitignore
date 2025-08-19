@@ -1,0 +1,16 @@
+# Maven
+/target/
+*.log
+*.class
+
+# IntelliJ IDEA
+*.iml
+*.iws
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local config
+/src/main/resources/application-dev.yml
