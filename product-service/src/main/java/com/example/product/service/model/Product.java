@@ -6,17 +6,46 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "products")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter @Setter
 public class Product {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
     @Column(nullable = false)
+    private
     String name;
     @Column(nullable = false)
+    private
     String description;
     @Column(nullable = false)
+    private
     BigDecimal price;
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                ", stock=" + stock +
+                '}';
+    }
+
     @Column(nullable = false)
+    private
     int stock;
+
+
+    public Product() {
+
+    }
+    public Product(String name, String description, BigDecimal price, int stock) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.stock = stock;
+    }
+
 }

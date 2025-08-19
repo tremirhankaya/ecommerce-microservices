@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,25 +36,34 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-
-    public Product updateProduct(Product updatedProduct) {
-        Long updatedProductId = updatedProduct.getId();
-
-        if (updatedProductId == null) {
-            throw new RuntimeException("Product id is null");
+    public Product updateProduct(Long id, Product updated) {
+        if (id == null) {
+            throw new IllegalArgumentException("id cannot be null");
         }
-        if (!productRepository.existsById(updatedProductId)) {
-            throw new RuntimeException("Product  does not exist with id: " + updatedProduct.getId());
+        if (updated == null) {
+            throw new IllegalArgumentException("updated product cannot be null");
         }
-        validate(updatedProduct);
-        Product existing = productRepository.findById(updatedProductId).get();
-        existing.setPrice(updatedProduct.getPrice());
-        existing.setName(updatedProduct.getName());
-        existing.setDescription(updatedProduct.getDescription());
-        existing.setStock(updatedProduct.getStock());
+
+        validate(updated);
+
+        // 2) Kayıt var mı?
+        Product existing = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product does not exist with id: " + id));
+
+        // 3) İsim değişiyorsa benzersizlik kontrolü
+        if (!existing.getName().equals(updated.getName())
+                && productRepository.existsByName(updated.getName())) {
+            throw new RuntimeException("Another product already uses name: " + updated.getName());
+        }
+
+        // 4) Alanları güncelle ve kaydet
+        existing.setName(updated.getName());
+        existing.setDescription(updated.getDescription());
+        existing.setPrice(updated.getPrice());
+        existing.setStock(updated.getStock());
+
         return productRepository.save(existing);
     }
-
     @Override
     @Transactional
 
