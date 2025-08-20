@@ -61,7 +61,16 @@ public class ProductController {
         Product p= productService.findById(id);
         return toResponse(p);
     }
-
+    @PutMapping("/api/products/{id}/decrease")
+    public ProductResponse decrease(@PathVariable Long id, @RequestParam int qty) {
+        var p= productService.decreaseStock(id, qty);
+        return toResponse(p);
+    }
+    @PutMapping("/api/products/{id}/increase")
+    public ProductResponse increase(@PathVariable Long id, @RequestParam int qty) {
+        var p= productService.increaseStock(id, qty);
+        return toResponse(p);
+    }
 
     private ProductResponse toResponse(Product p) { //Tekrarı azaltmak için yazıldı
         return new ProductResponse(p.getId(), p.getName(), p.getDescription(), p.getPrice(), p.getStock());

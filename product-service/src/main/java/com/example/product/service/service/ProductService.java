@@ -1,6 +1,7 @@
 package com.example.product.service.service;
 
 import com.example.product.service.model.Product;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -10,5 +11,8 @@ public interface ProductService {
     Product updateProduct(Long id,Product updated);
     void deleteProduct(Long id);
     List<Product> findAll();
+    Product decreaseStock(@Param("id") Long id, @Param("qty") int qty);
+    Product increaseStock(@Param("id") Long id, @Param("qty") int qty);
+
 
 }
