@@ -1,14 +1,10 @@
 package com.example.product.service;
 
-import com.example.product.service.model.Product;
 import com.example.product.service.service.ProductService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Profile;
-import java.math.BigDecimal;
-import java.util.List;
 
 @SpringBootApplication
 public class ProductServiceApplication {

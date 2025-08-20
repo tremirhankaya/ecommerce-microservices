@@ -1,6 +1,6 @@
 package com.example.product.service.repository;
 
-import com.example.product.service.model.Product;
+import com.example.product.service.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

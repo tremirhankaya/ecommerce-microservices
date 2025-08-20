@@ -2,7 +2,7 @@ package com.example.product.service.controller;
 
 import com.example.product.service.dto.ProductRequest;
 import com.example.product.service.dto.ProductResponse;
-import com.example.product.service.model.Product;
+import com.example.product.service.entity.Product;
 import com.example.product.service.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

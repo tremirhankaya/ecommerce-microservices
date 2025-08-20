@@ -1,6 +1,6 @@
 package com.example.product.service.service;
 
-import com.example.product.service.model.Product;
+import com.example.product.service.entity.Product;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;

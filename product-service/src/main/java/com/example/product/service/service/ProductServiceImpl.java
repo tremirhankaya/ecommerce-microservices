@@ -1,6 +1,6 @@
 package com.example.product.service.service;
 
-import com.example.product.service.model.Product;
+import com.example.product.service.entity.Product;
 import com.example.product.service.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -127,7 +126,7 @@ public class ProductServiceImpl implements ProductService {
 
         }
         Product refreshed= productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product does not exist with id: " + id));
-        System.out.println("Stock decreased");
+        System.out.println("Stock increased");
         return refreshed;
     }
 

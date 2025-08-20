@@ -1,4 +1,4 @@
-package com.example.product.service.model;
+package com.example.product.service.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
