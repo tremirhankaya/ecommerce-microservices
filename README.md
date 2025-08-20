@@ -96,7 +96,7 @@ microservices-ecommerce/
 Each service has its own PostgreSQL container. Example for customer-service:
 
 ```bash
-docker run --name ecom-customer-db   -e POSTGRES_USER=ekaya   -e POSTGRES_PASSWORD=2070Badem   -e POSTGRES_DB=customer_db   -p 5435:5432   -v ecom-customer-db-data:/var/lib/postgresql/data   -d postgres:16
+docker run --name ecom-customer-db   -e POSTGRES_USER=<your-username>   -e POSTGRES_PASSWORD=<your-password>   -e POSTGRES_DB=customer_db   -p 5435:5432   -v ecom-customer-db-data:/var/lib/postgresql/data   -d postgres:16
 ```
 
 ---
