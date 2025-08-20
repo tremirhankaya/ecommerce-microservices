@@ -39,6 +39,8 @@ public class ProductController {
         product.setPrice(req.getPrice());
         product.setStock(req.getStock());
 
+
+
         Product saved= productService.updateProduct(id, product);
         return toResponse(saved);
     }

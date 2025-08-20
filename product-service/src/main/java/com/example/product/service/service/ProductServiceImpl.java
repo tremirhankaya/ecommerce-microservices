@@ -23,7 +23,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-
     public Product createProduct(Product product) {
         validate(product);
 

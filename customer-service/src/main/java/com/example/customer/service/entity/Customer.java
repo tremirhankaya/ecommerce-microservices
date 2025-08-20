@@ -38,7 +38,6 @@ public class Customer {
     @Column(name = "phone", length = 30)
     private String phone;
 
-    // Adres alanları
     @Column(name = "street", length = 255)
     private String street;
 
