@@ -31,6 +31,7 @@ public class ProductServiceImpl implements ProductService {
         if (productRepository.existsByName(product.getName())) {
             throw new RuntimeException("Product already exists: " + product.getName());
         }
+        System.out.println("Created product: " + product.getName()+ " with id:" + product.getId());
         return productRepository.save(product);
     }
 
@@ -55,12 +56,13 @@ public class ProductServiceImpl implements ProductService {
                 && productRepository.existsByName(updated.getName())) {
             throw new RuntimeException("Another product already uses name: " + updated.getName());
         }
-
         // 4) Alanları güncelle ve kaydet
         existing.setName(updated.getName());
         existing.setDescription(updated.getDescription());
         existing.setPrice(updated.getPrice());
         existing.setStock(updated.getStock());
+        System.out.println("Updated product: " + updated.getName()+ " with id:" + updated.getId());
+
 
         return productRepository.save(existing);
     }
@@ -71,6 +73,7 @@ public class ProductServiceImpl implements ProductService {
         if (!productRepository.existsById(id)) {
             throw new RuntimeException("Product  does not exist with id: " + id);
         }
+        System.out.println("Deleted product with id:" + id);
         productRepository.deleteById(id);
 
 

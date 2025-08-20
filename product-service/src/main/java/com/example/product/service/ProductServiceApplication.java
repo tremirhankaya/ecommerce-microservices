@@ -7,7 +7,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -22,7 +21,7 @@ public class ProductServiceApplication {
 	@Bean
 	CommandLineRunner seedData(ProductService productService) {
 		return args -> {
-			System.out.println("---- Seeding sample products ----");
+			//Testler
 			//Product product = new Product("Playstation","Gaming Console",BigDecimal.valueOf(499.99),100);
 //			productService.updateProduct(3L,product);
 //			productService.findById(3L);

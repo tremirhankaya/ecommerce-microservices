@@ -13,7 +13,7 @@ public class ProductRequest {
 
     @NotNull(message = "price is required")
     @DecimalMin(value = "0.0", inclusive = true, message = "price must be >= 0")
-    //@Digits(integer = 16, fraction = 2) // istersen aç: 2 ondalık zorunlu
+
     private BigDecimal price;
 
     @NotNull(message = "stock is required")
