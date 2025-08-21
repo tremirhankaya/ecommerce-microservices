@@ -1,5 +1,6 @@
 package com.example.product.service.service;
 
+import com.example.product.service.dto.ProductRequest;
 import com.example.product.service.entity.Product;
 import com.example.product.service.repository.ProductRepository;
 import jakarta.transaction.Transactional;
@@ -15,58 +16,53 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
 
     @Override
-    @Transactional
     public Product findById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
     }
 
     @Override
-    @Transactional
-    public Product createProduct(Product product) {
-        validate(product);
+    public Product createProduct(ProductRequest req) {
+        //  mapleme
 
-        if (productRepository.existsByName(product.getName())) {
-            throw new RuntimeException("Product already exists: " + product.getName());
+        validate(req);
+
+        if (productRepository.existsByName(req.getName())) {
+            throw new RuntimeException("Product already exists: " + req.getName());
         }
-        System.out.println("Created product: " + product.getName()+ " with id:" + product.getId());
-        return productRepository.save(product);
+
+        Product saved = productRepository.save(mapToEntity(req,new  Product()));
+        System.out.println("Created product: " + saved.getName() + " with id:" + saved.getId());
+        return saved;
     }
 
+
     @Override
-    @Transactional
-    public Product updateProduct(Long id, Product updated) {
+    public Product updateProduct(Long id, ProductRequest req) {
+        validate(req);
         if (id == null) {
             throw new IllegalArgumentException("id cannot be null");
         }
-        if (updated == null) {
+        if (req == null) {
             throw new IllegalArgumentException("updated product cannot be null");
         }
 
-        validate(updated);
-
-        // 2) Kayıt var mı?
         Product existing = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product does not exist with id: " + id));
 
-        // 3) İsim değişiyorsa benzersizlik kontrolü
-        if (!existing.getName().equals(updated.getName())
-                && productRepository.existsByName(updated.getName())) {
-            throw new RuntimeException("Another product already uses name: " + updated.getName());
+        if (!existing.getName().equals(req.getName())
+                && productRepository.existsByName(req.getName())) {
+            throw new RuntimeException("Another product already uses name: " + req.getName());
         }
-        // 4) Alanları güncelle ve kaydet
-        existing.setName(updated.getName());
-        existing.setDescription(updated.getDescription());
-        existing.setPrice(updated.getPrice());
-        existing.setStock(updated.getStock());
-        System.out.println("Updated product: " + updated.getName()+ " with id:" + updated.getId());
 
 
-        return productRepository.save(existing);
+
+        Product saved = productRepository.save(mapToEntity(req,existing));
+        System.out.println("Updated product: " + saved.getName() + " with id: " + saved.getId());
+        return saved;
     }
-    @Override
-    @Transactional
 
+    @Override
     public void deleteProduct(Long id) {
         if (!productRepository.existsById(id)) {
             throw new RuntimeException("Product  does not exist with id: " + id);
@@ -78,14 +74,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Transactional
-
     public List<Product> findAll() {
         return productRepository.findAll();
     }
 
     @Override
-    @Transactional
     public Product decreaseStock(Long id, int qty) {
         if(id == null) {
             throw new IllegalArgumentException("id cannot be null");
@@ -108,7 +101,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Transactional
     public Product increaseStock(Long id, int qty) {
         if(id == null) {
             throw new IllegalArgumentException("id cannot be null");
@@ -129,7 +121,7 @@ public class ProductServiceImpl implements ProductService {
         return refreshed;
     }
 
-    private void validate(Product p) {
+    private void validate(ProductRequest p) {
         if (p.getName() == null || p.getName().isBlank()) {
             throw new IllegalArgumentException("Product name cannot be blank");
         }
@@ -141,6 +133,14 @@ public class ProductServiceImpl implements ProductService {
         if (stock == null || stock < 0) {
             throw new IllegalArgumentException("Stock must be zero or positive");
         }
+    }
+
+    private Product mapToEntity(ProductRequest req, Product product) {
+        product.setName(req.getName());
+        product.setDescription(req.getDescription());
+        product.setPrice(req.getPrice());
+        product.setStock(req.getStock());
+        return product;
     }
 
 }

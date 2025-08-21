@@ -10,65 +10,56 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping
+@RequestMapping("/api/products")
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
 
-    @PostMapping("/api/products")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ProductResponse create(@RequestBody @Valid ProductRequest req) {
-        Product product = new Product();
-        product.setName(req.getName());
-        product.setDescription(req.getDescription());
-        product.setPrice(req.getPrice());
-        product.setStock(req.getStock());
 
 
-        Product saved= productService.createProduct(product);
+        Product saved= productService.createProduct(req);
 
         return toResponse(saved);
     }
 
-    @PutMapping("/api/products/{id}")
+    @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ProductResponse update(@PathVariable Long id, @RequestBody @Valid ProductRequest req) {
-        Product product = new Product();
-        product.setName(req.getName());
-        product.setDescription(req.getDescription());
-        product.setPrice(req.getPrice());
-        product.setStock(req.getStock());
 
 
 
-        Product saved= productService.updateProduct(id, product);
+
+        Product saved= productService.updateProduct(id, req);
         return toResponse(saved);
     }
 
-    @DeleteMapping("/api/products/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         productService.deleteProduct(id);
 
     }
 
-    @GetMapping("/api/products")
+    @GetMapping
     public java.util.List<ProductResponse> getProducts() {
         return productService.findAll().stream().map(this::toResponse).toList();
         //her bir product ProductResponse'a dönüştürülüyor.Veri Product geliyor ancak Response geri döndürülmesi lazım
     }
 
-    @GetMapping("/api/products/{id}")
+    @GetMapping("/{id}")
     public ProductResponse getProduct(@PathVariable Long id) {
         Product p= productService.findById(id);
         return toResponse(p);
     }
-    @PutMapping("/api/products/{id}/decrease")
+    @PutMapping("/{id}/decrease")
     public ProductResponse decrease(@PathVariable Long id, @RequestParam int qty) {
         var p= productService.decreaseStock(id, qty);
         return toResponse(p);
     }
-    @PutMapping("/api/products/{id}/increase")
+    @PutMapping("/{id}/increase")
     public ProductResponse increase(@PathVariable Long id, @RequestParam int qty) {
         var p= productService.increaseStock(id, qty);
         return toResponse(p);

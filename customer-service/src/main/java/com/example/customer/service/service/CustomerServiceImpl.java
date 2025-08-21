@@ -1,5 +1,6 @@
 package com.example.customer.service.service;
 
+import com.example.customer.service.dto.CustomerRequest;
 import com.example.customer.service.entity.Customer;
 import com.example.customer.service.repository.CustomerRepository;
 import jakarta.transaction.Transactional;
@@ -29,39 +30,31 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    @Transactional
-    public Customer createCustomer(Customer customer) {
-        if (customerRepository.findByEmail(customer.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists: " + customer.getEmail());
+    public Customer createCustomer(CustomerRequest req) {
+        if (customerRepository.findByEmail(req.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already exists: " + req.getEmail());
         }
+
+        Customer customer = mapToEntity(new Customer(), req);
+
         Customer savedCustomer = customerRepository.save(customer);
         System.out.println("Customer created with ID: " + savedCustomer.getId());
-        return customerRepository.save(savedCustomer);
-
+        return savedCustomer;
     }
 
     @Override
-    @Transactional
-    public Customer updateCustomer(Long id, Customer updatedCustomer) {
+    public Customer updateCustomer(Long id, CustomerRequest req) {
         Customer existing = customerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Customer not found with id: " + id));
 
-        existing.setFirstName(updatedCustomer.getFirstName());
-        existing.setLastName(updatedCustomer.getLastName());
-        existing.setEmail(updatedCustomer.getEmail());
-        existing.setPhone(updatedCustomer.getPhone());
-        existing.setStreet(updatedCustomer.getStreet());
-        existing.setCity(updatedCustomer.getCity());
-        existing.setState(updatedCustomer.getState());
-        existing.setPostalCode(updatedCustomer.getPostalCode());
-        existing.setCountry(updatedCustomer.getCountry());
-        System.out.println("Customer updated with ID: " + id);
-       return customerRepository.save(existing);
+        Customer updatedCustomer = mapToEntity(existing, req);
 
+        Customer saved = customerRepository.save(updatedCustomer);
+        System.out.println("Customer updated with ID: " + id);
+        return saved;
     }
 
     @Override
-    @Transactional
     public void deleteCustomer(Long id) {
         if (!customerRepository.existsById(id)) {
             throw new RuntimeException("Customer not found with id: " + id);
@@ -69,4 +62,17 @@ public class CustomerServiceImpl implements CustomerService {
         customerRepository.deleteById(id);
         System.out.println("Customer deleted with ID: " + id);
     }
+    private Customer mapToEntity(Customer customer, CustomerRequest req) {
+        customer.setFirstName(req.getFirstName());
+        customer.setLastName(req.getLastName());
+        customer.setEmail(req.getEmail());
+        customer.setPhone(req.getPhone());
+        customer.setStreet(req.getStreet());
+        customer.setCity(req.getCity());
+        customer.setState(req.getState());
+        customer.setPostalCode(req.getPostalCode());
+        customer.setCountry(req.getCountry());
+        return customer;
+    }
+
 }
