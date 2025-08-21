@@ -1,6 +1,7 @@
 package com.example.product.service.service;
 
 import com.example.product.service.dto.ProductRequest;
+import com.example.product.service.dto.ProductResponse;
 import com.example.product.service.entity.Product;
 import com.example.product.service.repository.ProductRepository;
 import jakarta.transaction.Transactional;
@@ -16,36 +17,28 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
 
     @Override
-    public Product findById(Long id) {
-        return productRepository.findById(id)
+    public ProductResponse findById(Long id) {
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+        return mapProductToResponse(product);
     }
 
     @Override
-    public Product createProduct(ProductRequest req) {
-        //  mapleme
-
+    public ProductResponse createProduct(ProductRequest req) {
         validate(req);
 
         if (productRepository.existsByName(req.getName())) {
             throw new RuntimeException("Product already exists: " + req.getName());
         }
 
-        Product saved = productRepository.save(mapToEntity(req,new  Product()));
+        Product saved = productRepository.save(mapRequestToEntity(req, new Product()));
         System.out.println("Created product: " + saved.getName() + " with id:" + saved.getId());
-        return saved;
+        return mapProductToResponse(saved);
     }
 
-
     @Override
-    public Product updateProduct(Long id, ProductRequest req) {
+    public ProductResponse updateProduct(Long id, ProductRequest req) {
         validate(req);
-        if (id == null) {
-            throw new IllegalArgumentException("id cannot be null");
-        }
-        if (req == null) {
-            throw new IllegalArgumentException("updated product cannot be null");
-        }
 
         Product existing = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product does not exist with id: " + id));
@@ -55,11 +48,9 @@ public class ProductServiceImpl implements ProductService {
             throw new RuntimeException("Another product already uses name: " + req.getName());
         }
 
-
-
-        Product saved = productRepository.save(mapToEntity(req,existing));
+        Product saved = productRepository.save(mapRequestToEntity(req, existing));
         System.out.println("Updated product: " + saved.getName() + " with id: " + saved.getId());
-        return saved;
+        return mapProductToResponse(saved);
     }
 
     @Override
@@ -69,56 +60,53 @@ public class ProductServiceImpl implements ProductService {
         }
         System.out.println("Deleted product with id:" + id);
         productRepository.deleteById(id);
-
-
     }
 
     @Override
-    public List<Product> findAll() {
-        return productRepository.findAll();
+    public List<ProductResponse> findAll() {
+        return productRepository.findAll().stream().map(this::mapProductToResponse).toList();
     }
 
     @Override
-    public Product decreaseStock(Long id, int qty) {
-        if(id == null) {
+    public ProductResponse decreaseStock(Long id, int qty) {
+        if (id == null) {
             throw new IllegalArgumentException("id cannot be null");
         }
-        if(qty <= 0) {
+        if (qty <= 0) {
             throw new IllegalArgumentException("qty cannot be negative");
         }
-        int changed=  productRepository.decreaseStock(id, qty);
-        if(changed == 0) {
-            if(!productRepository.existsById(id)) {
+        int changed = productRepository.decreaseStock(id, qty);
+        if (changed == 0) {
+            if (!productRepository.existsById(id)) {
                 throw new RuntimeException("Product does not exist with id: " + id);
             }
             throw new RuntimeException("Insufficient stock for product id: " + id);
-
         }
-        Product refreshed= productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product does not exist with id: " + id));
+        Product refreshed = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product does not exist with id: " + id));
         System.out.println("Stock decreased");
-        return refreshed;
-
+        return mapProductToResponse(refreshed);
     }
 
     @Override
-    public Product increaseStock(Long id, int qty) {
-        if(id == null) {
+    public ProductResponse increaseStock(Long id, int qty) {
+        if (id == null) {
             throw new IllegalArgumentException("id cannot be null");
         }
-        if(qty <= 0) {
+        if (qty <= 0) {
             throw new IllegalArgumentException("qty cannot be negative");
         }
-        int changed= productRepository.increaseStock(id, qty);
-        if(changed == 0) {
-            if(!productRepository.existsById(id)) {
+        int changed = productRepository.increaseStock(id, qty);
+        if (changed == 0) {
+            if (!productRepository.existsById(id)) {
                 throw new RuntimeException("Product does not exist with id: " + id);
             }
             throw new RuntimeException("Insufficient stock for product id: " + id);
-
         }
-        Product refreshed= productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product does not exist with id: " + id));
+        Product refreshed = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product does not exist with id: " + id));
         System.out.println("Stock increased");
-        return refreshed;
+        return mapProductToResponse(refreshed);
     }
 
     private void validate(ProductRequest p) {
@@ -135,12 +123,25 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    private Product mapToEntity(ProductRequest req, Product product) {
+    // request > product
+    private Product mapRequestToEntity(ProductRequest req, Product product) {
         product.setName(req.getName());
         product.setDescription(req.getDescription());
         product.setPrice(req.getPrice());
         product.setStock(req.getStock());
         return product;
     }
+
+    // product > response
+    private ProductResponse mapProductToResponse(Product p) {
+        return new ProductResponse(
+                p.getId(),
+                p.getName(),
+                p.getDescription(),
+                p.getPrice(),
+                p.getStock()
+        );
+    }
+
 
 }

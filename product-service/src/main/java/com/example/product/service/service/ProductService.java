@@ -1,19 +1,16 @@
 package com.example.product.service.service;
 
 import com.example.product.service.dto.ProductRequest;
-import com.example.product.service.entity.Product;
-import org.springframework.data.repository.query.Param;
+import com.example.product.service.dto.ProductResponse;
 
 import java.util.List;
 
 public interface ProductService {
-    Product findById(Long id);
-    public Product createProduct(ProductRequest req);
-    Product updateProduct(Long id,ProductRequest req);
+    ProductResponse findById(Long id);
+    ProductResponse createProduct(ProductRequest req);
+    ProductResponse updateProduct(Long id, ProductRequest req);
     void deleteProduct(Long id);
-    List<Product> findAll();
-    Product decreaseStock(@Param("id") Long id, @Param("qty") int qty);
-    Product increaseStock(@Param("id") Long id, @Param("qty") int qty);
-
-
+    List<ProductResponse> findAll();
+    ProductResponse decreaseStock(Long id, int qty);
+    ProductResponse increaseStock(Long id, int qty);
 }
