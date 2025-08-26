@@ -10,8 +10,6 @@ import java.util.List;
 public class OrderRequest {
     @NotNull(message = "Customer ID is required")
     private Long customerId;
-    @NotNull(message = "E-mail is required")
-    private String email;
 
     @NotNull(message = "Order items are required")
     private List<OrderItemRequest> items;

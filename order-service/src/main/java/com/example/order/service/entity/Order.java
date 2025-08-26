@@ -36,7 +36,7 @@ public class Order {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
     private List<OrderItem> items;
 
     public Order(Long customerId, String customerEmail, String street, String city, String state, String postalCode, String country, BigDecimal totalAmount, OrderStatus status, LocalDateTime createdAt, List<OrderItem> items) {
