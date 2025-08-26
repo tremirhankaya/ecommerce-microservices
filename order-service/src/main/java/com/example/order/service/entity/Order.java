@@ -20,8 +20,6 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-
     private Long customerId;
     private String customerEmail;
 
@@ -38,6 +36,9 @@ public class Order {
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> items;
+
     public Order(Long customerId, String customerEmail, String street, String city, String state, String postalCode, String country, BigDecimal totalAmount, OrderStatus status, LocalDateTime createdAt, List<OrderItem> items) {
         this.customerId = customerId;
         this.customerEmail = customerEmail;
@@ -52,6 +53,5 @@ public class Order {
         this.items = items;
     }
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItem> items;
+
 }
