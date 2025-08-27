@@ -67,7 +67,7 @@ public class CustomerServiceImpl implements CustomerService {
         System.out.println("Customer deleted with ID: " + id);
     }
 
-    // Request → Entity
+    // Request → Customer
     private Customer mapToEntity(Customer customer, CustomerRequest req) {
         customer.setFirstName(req.getFirstName());
         customer.setLastName(req.getLastName());
@@ -81,7 +81,7 @@ public class CustomerServiceImpl implements CustomerService {
         return customer;
     }
 
-    // Entity → Response
+    // Customer → Response
     private CustomerResponse mapToResponse(Customer c) {
         return new CustomerResponse(
                 c.getId(),

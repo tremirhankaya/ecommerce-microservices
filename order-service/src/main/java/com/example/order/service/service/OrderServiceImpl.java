@@ -23,14 +23,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
-
     @Qualifier("customerClient")
     private final WebClient customerClient;
 
     @Qualifier("productClient")
     private final WebClient productClient;
 
-    private final OrderRepository  orderRepository;
+    private final OrderRepository orderRepository;
 
     @Override
     @Transactional
@@ -45,7 +44,7 @@ public class OrderServiceImpl implements OrderService {
         CustomerResponse customer = customerClient.get()
                 .uri("/api/customers/{id}", request.getCustomerId())
                 .retrieve()
-                .bodyToMono(CustomerResponse.class)
+                .bodyToMono(CustomerResponse.class)//json -> java
                 .block();
 
         if (customer == null) {
@@ -68,20 +67,19 @@ public class OrderServiceImpl implements OrderService {
 
             var unitPrice = product.price();
             var lineTotal = unitPrice.multiply(java.math.BigDecimal.valueOf(it.getQuantity()));
-            total = total.add(lineTotal);
+            total = total.add(lineTotal);// Toplam ücret hesaplama
 
-            var oi = new OrderItem();
+            var oi = new OrderItem();//Ürün oluşturma
             oi.setProductId(product.id());
             oi.setQuantity(it.getQuantity());
             oi.setUnitPrice(unitPrice);
             oi.setProductName(product.name());
             oi.setLineTotal(lineTotal);
 
-            orderItems.add(oi);
+            orderItems.add(oi);//ürünü ürün listesine ekleme
         }
 
-
-        var order = new Order();
+        var order = new Order();//sipariş oluşturma
         order.setCustomerId(customer.id());
         order.setCustomerEmail(customer.email());
         order.setStreet(customer.street());
@@ -96,48 +94,42 @@ public class OrderServiceImpl implements OrderService {
             oi.setOrder(order);
         }
 
-
         order.setItems(orderItems);
-
         order = orderRepository.save(order);
 
-
-        java.util.List<OrderItemResponse> itemDtos = order.getItems().stream()
-                .map(oi -> new OrderItemResponse(
-                        oi.getProductId(),
-                        oi.getProductName(),
-                        oi.getUnitPrice(),
-                        oi.getQuantity(),
-                        oi.getLineTotal()
-
-                ))
-                .toList();
-
-        return new OrderResponse(
-                order.getId(),
-                order.getCustomerId(),
-                order.getTotalAmount(),
-                order.getStatus().name(),
-                order.getCreatedAt(),
-                itemDtos
-        );
+        return mapToOrderResponse(order);
     }
 
     @Override
     public OrderResponse findOrderById(Long id) {
         var order = orderRepository.findById(id)
-                .orElseThrow(() -> {
-                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found: " + id);
-                });
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found: " + id));
 
-        var items = order.getItems().stream()
-                .map(oi -> new OrderItemResponse(
-                        oi.getProductId(),
-                        oi.getProductName(),
-                        oi.getUnitPrice(),
-                        oi.getQuantity(),
-                        oi.getLineTotal()
-                ))
+        return mapToOrderResponse(order);
+    }
+
+    @Override
+    public boolean deleteOrderById(Long id) {
+        var order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found: " + id));
+
+        orderRepository.delete(order);
+        return true;
+    }
+
+    @Override
+    public List<OrderResponse> getAllOrders() {
+        return orderRepository.findAll()
+                .stream()
+                .map(this::mapToOrderResponse) // direkt mapper kullanıyoruz
+                .toList();
+    }
+
+   // order -> orderItem
+    private OrderResponse mapToOrderResponse(Order order) {
+        List<OrderItemResponse> items = order.getItems()
+                .stream()
+                .map(this::mapToOrderItemResponse)
                 .toList();
 
         return new OrderResponse(
@@ -149,46 +141,15 @@ public class OrderServiceImpl implements OrderService {
                 items
         );
     }
-
-    @Override
-    public boolean deleteOrderById(Long id) {
-        var order = orderRepository.findById(id)
-                .orElseThrow(() -> {
-                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found: " + id);
-                });
-
-      orderRepository.delete(order);
-
-
-
-
-        return true;
+//orderItem -> orderItemResponse
+    private OrderItemResponse mapToOrderItemResponse(OrderItem oi) {
+        return new OrderItemResponse(
+                oi.getProductId(),
+                oi.getProductName(),
+                oi.getUnitPrice(),
+                oi.getQuantity(),
+                oi.getLineTotal()
+        );
     }
-
-    @Override
-    public List<OrderResponse> getAllOrders() {//for yerine
-        return orderRepository.findAll().stream()
-                .map(order -> {
-                    List<OrderItemResponse> items = order.getItems().stream()
-                            .map(oi -> new OrderItemResponse(
-                                    oi.getProductId(),
-                                    oi.getProductName(),
-                                    oi.getUnitPrice(),
-                                    oi.getQuantity(),
-                                    oi.getLineTotal()
-                            ))
-                            .toList();
-
-                    return new OrderResponse(
-                            order.getId(),
-                            order.getCustomerId(),
-                            order.getTotalAmount(),
-                            order.getStatus().name(),
-                            order.getCreatedAt(),
-                            items
-                    );
-                })
-                .toList();
-    }
-
 }
+

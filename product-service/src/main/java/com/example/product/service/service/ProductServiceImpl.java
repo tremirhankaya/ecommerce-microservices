@@ -66,47 +66,47 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findAll().stream().map(this::mapProductToResponse).toList();
     }
 
-    @Override
-    public ProductResponse decreaseStock(Long id, int qty) {
-        if (id == null) {
-            throw new IllegalArgumentException("id cannot be null");
-        }
-        if (qty <= 0) {
-            throw new IllegalArgumentException("qty cannot be negative");
-        }
-        int changed = productRepository.decreaseStock(id, qty);
-        if (changed == 0) {
-            if (!productRepository.existsById(id)) {
-                throw new RuntimeException("Product does not exist with id: " + id);
-            }
-            throw new RuntimeException("Insufficient stock for product id: " + id);
-        }
-        Product refreshed = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product does not exist with id: " + id));
-        System.out.println("Stock decreased");
-        return mapProductToResponse(refreshed);
-    }
-
-    @Override
-    public ProductResponse increaseStock(Long id, int qty) {
-        if (id == null) {
-            throw new IllegalArgumentException("id cannot be null");
-        }
-        if (qty <= 0) {
-            throw new IllegalArgumentException("qty cannot be negative");
-        }
-        int changed = productRepository.increaseStock(id, qty);
-        if (changed == 0) {
-            if (!productRepository.existsById(id)) {
-                throw new RuntimeException("Product does not exist with id: " + id);
-            }
-            throw new RuntimeException("Insufficient stock for product id: " + id);
-        }
-        Product refreshed = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product does not exist with id: " + id));
-        System.out.println("Stock increased");
-        return mapProductToResponse(refreshed);
-    }
+//    @Override
+//    public ProductResponse decreaseStock(Long id, int qty) {
+//        if (id == null) {
+//            throw new IllegalArgumentException("id cannot be null");
+//        }
+//        if (qty <= 0) {
+//            throw new IllegalArgumentException("qty cannot be negative");
+//        }
+//        int changed = productRepository.decreaseStock(id, qty);
+//        if (changed == 0) {
+//            if (!productRepository.existsById(id)) {
+//                throw new RuntimeException("Product does not exist with id: " + id);
+//            }
+//            throw new RuntimeException("Insufficient stock for product id: " + id);
+//        }
+//        Product refreshed = productRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("Product does not exist with id: " + id));
+//        System.out.println("Stock decreased");
+//        return mapProductToResponse(refreshed);
+//    }
+//
+//    @Override
+//    public ProductResponse increaseStock(Long id, int qty) {
+//        if (id == null) {
+//            throw new IllegalArgumentException("id cannot be null");
+//        }
+//        if (qty <= 0) {
+//            throw new IllegalArgumentException("qty cannot be negative");
+//        }
+//        int changed = productRepository.increaseStock(id, qty);
+//        if (changed == 0) {
+//            if (!productRepository.existsById(id)) {
+//                throw new RuntimeException("Product does not exist with id: " + id);
+//            }
+//            throw new RuntimeException("Insufficient stock for product id: " + id);
+//        }
+//        Product refreshed = productRepository.findById(id)
+//                .orElseThrow(() -> new RuntimeException("Product does not exist with id: " + id));
+//        System.out.println("Stock increased");
+//        return mapProductToResponse(refreshed);
+//    }
 
     private void validate(ProductRequest p) {
         if (p.getName() == null || p.getName().isBlank()) {

@@ -37,7 +37,7 @@ public class ProductController {
 
     @GetMapping
     public List<ProductResponse> getProducts() {
-        return productService.findAll().stream().toList();
+        return productService.findAll();
     }
 
     @GetMapping("/{id}")
@@ -45,17 +45,17 @@ public class ProductController {
 
         return productService.findById(id);
     }
-
-    @PutMapping("/{id}/decrease")
-    public ProductResponse decrease(@PathVariable Long id, @RequestParam int qty) {
-
-        return productService.decreaseStock(id, qty);
-    }
-
-    @PutMapping("/{id}/increase")
-    public ProductResponse increase(@PathVariable Long id, @RequestParam int qty) {
-        return productService.increaseStock(id, qty);
-    }
+//
+//    @PutMapping("/{id}/decrease")
+//    public ProductResponse decrease(@PathVariable Long id, @RequestParam int qty) {
+//
+//        return productService.decreaseStock(id, qty);
+//    }
+//
+//    @PutMapping("/{id}/increase")
+//    public ProductResponse increase(@PathVariable Long id, @RequestParam int qty) {
+//        return productService.increaseStock(id, qty);
+//    }
 
 
 }
