@@ -1,10 +1,9 @@
 package com.example.product.service.service;
 
-import com.example.product.service.dto.ProductRequest;
-import com.example.product.service.dto.ProductResponse;
+import com.example.common.dto.ProductRequest;
+import com.example.common.dto.ProductResponse;
 import com.example.product.service.entity.Product;
 import com.example.product.service.repository.ProductRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

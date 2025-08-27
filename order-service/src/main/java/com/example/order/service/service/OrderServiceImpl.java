@@ -18,8 +18,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 @Service
 @RequiredArgsConstructor
@@ -153,12 +151,44 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponse deleteOrderById(Long id) {
-        return null;
+    public boolean deleteOrderById(Long id) {
+        var order = orderRepository.findById(id)
+                .orElseThrow(() -> {
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found: " + id);
+                });
+
+      orderRepository.delete(order);
+
+
+
+
+        return true;
     }
 
     @Override
-    public List<OrderResponse> getAllOrders() {
-        return List.of();
+    public List<OrderResponse> getAllOrders() {//for yerine
+        return orderRepository.findAll().stream()
+                .map(order -> {
+                    List<OrderItemResponse> items = order.getItems().stream()
+                            .map(oi -> new OrderItemResponse(
+                                    oi.getProductId(),
+                                    oi.getProductName(),
+                                    oi.getUnitPrice(),
+                                    oi.getQuantity(),
+                                    oi.getLineTotal()
+                            ))
+                            .toList();
+
+                    return new OrderResponse(
+                            order.getId(),
+                            order.getCustomerId(),
+                            order.getTotalAmount(),
+                            order.getStatus().name(),
+                            order.getCreatedAt(),
+                            items
+                    );
+                })
+                .toList();
     }
+
 }

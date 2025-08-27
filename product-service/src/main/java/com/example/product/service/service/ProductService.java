@@ -1,7 +1,7 @@
 package com.example.product.service.service;
 
-import com.example.product.service.dto.ProductRequest;
-import com.example.product.service.dto.ProductResponse;
+import com.example.common.dto.ProductRequest;
+import com.example.common.dto.ProductResponse;
 
 import java.util.List;
 
