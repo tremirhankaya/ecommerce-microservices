@@ -16,25 +16,25 @@ public class OrderController {
     private final OrderService orderService;
 
 
-    @PostMapping
+    @PostMapping("/create")
     public OrderResponse createOrder(@RequestBody OrderRequest orderRequest) {
         OrderResponse orderResponse = orderService.createOrder(orderRequest);
         return orderResponse;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/list/{id}")
     public OrderResponse findById(@PathVariable Long id) {
         return orderService.findOrderById(id);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteOrderById(@PathVariable Long id) {
         orderService.deleteOrderById(id);
         return ResponseEntity.ok("Order deleted");
 
     }
 
-    @GetMapping
+    @GetMapping("/list")
     public List<OrderResponse> findAllOrders() {
         return  orderService.getAllOrders();
     }

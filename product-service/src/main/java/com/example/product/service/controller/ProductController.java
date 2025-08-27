@@ -15,32 +15,32 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
 
-    @PostMapping
+    @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     public ProductResponse create(@RequestBody @Valid ProductRequest req) {
 
         return productService.createProduct(req);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ProductResponse update(@PathVariable Long id, @RequestBody @Valid ProductRequest req) {
 
         return  productService.updateProduct(id, req);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")//düzelt
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         productService.deleteProduct(id);
     }
 
-    @GetMapping
+    @GetMapping("/list")
     public List<ProductResponse> getProducts() {
         return productService.findAll();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("list/{id}")
     public ProductResponse getProduct(@PathVariable Long id) {
 
         return productService.findById(id);

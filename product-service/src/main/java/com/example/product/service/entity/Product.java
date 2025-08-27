@@ -1,16 +1,20 @@
 package com.example.product.service.entity;
+
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.math.BigDecimal;
 
 
 @Entity
 @Table(name = "products")
-@Getter @Setter
+@Getter
+@Setter
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private
     long id;
     @Column(nullable = false)
     private
@@ -29,6 +33,7 @@ public class Product {
     public Product() {
 
     }
+
     public Product(String name, String description, BigDecimal price, int stock) {
         this.name = name;
         this.description = description;

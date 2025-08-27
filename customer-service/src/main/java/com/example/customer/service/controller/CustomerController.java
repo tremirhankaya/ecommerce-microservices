@@ -17,30 +17,30 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
-    @GetMapping
+    @GetMapping("/list")
     public List<CustomerResponse> getAllCustomers() {
         return customerService.getAllCustomers();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/list/{id}")
     public CustomerResponse getCustomer(@PathVariable Long id) {
         return customerService.findCustomerById(id);
     }
 
-    @PostMapping
+    @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     public CustomerResponse create(@RequestBody @Valid CustomerRequest req) {
         return customerService.createCustomer(req);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     @ResponseStatus(HttpStatus.OK)
     public CustomerResponse update(@PathVariable Long id,
                                    @RequestBody @Valid CustomerRequest req) {
         return customerService.updateCustomer(id, req);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)//response body yok
     public void deleteCustomer(@PathVariable Long id) {
         customerService.deleteCustomer(id);
