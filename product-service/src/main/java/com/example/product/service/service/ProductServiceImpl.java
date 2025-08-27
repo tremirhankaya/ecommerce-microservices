@@ -1,134 +1,113 @@
 package com.example.product.service.service;
+
 import com.example.product.service.exception.ProductAlreadyExistsException;
 import com.example.product.service.exception.ProductNameInUseException;
 import com.example.product.service.exception.ProductNotFoundException;
-
+import com.example.product.service.exception.ProductValidationException;
 
 import com.example.common.dto.ProductRequest;
 import com.example.common.dto.ProductResponse;
 import com.example.product.service.entity.Product;
-import com.example.product.service.exception.ProductValidationException;
 import com.example.product.service.repository.ProductRepository;
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;   // <— SLF4J (Lombok)
+
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
+
     private final ProductRepository productRepository;
 
     @Override
     public ProductResponse findById(Long id) {
+        log.debug("Finding product by id={}", id);
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
+        log.debug("Found product id={} name={}", product.getId(), product.getName());
         return mapProductToResponse(product);
     }
 
     @Override
     public ProductResponse createProduct(ProductRequest req) {
+        log.debug("Creating product name={}", req.getName());
         validate(req);
 
         if (productRepository.existsByName(req.getName())) {
+            log.warn("Product create blocked: name already exists name={}", req.getName());
             throw new ProductAlreadyExistsException(req.getName());
         }
 
         Product saved = productRepository.save(mapRequestToEntity(req, new Product()));
-        System.out.println("Created product: " + saved.getName() + " with id:" + saved.getId());
+        log.info("Created product: {} (id={})", saved.getName(), saved.getId());
         return mapProductToResponse(saved);
     }
 
     @Override
     public ProductResponse updateProduct(Long id, ProductRequest req) {
+        log.debug("Updating product id={} newName={}", id, req.getName());
         validate(req);
 
         Product existing = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(id));
 
-        if (!existing.getName().equals(req.getName())
+        if (!Objects.equals(existing.getName(), req.getName())
                 && productRepository.existsByName(req.getName())) {
+            log.warn("Product update blocked: name in use name={}", req.getName());
             throw new ProductNameInUseException(req.getName());
         }
 
         Product saved = productRepository.save(mapRequestToEntity(req, existing));
-        System.out.println("Updated product: " + saved.getName() + " with id: " + saved.getId());
+        log.info("Updated product: {} (id={})", saved.getName(), saved.getId());
         return mapProductToResponse(saved);
     }
 
     @Override
     public void deleteProduct(Long id) {
+        log.debug("Deleting product id={}", id);
         if (!productRepository.existsById(id)) {
+            log.warn("Delete failed: product not found id={}", id);
             throw new ProductNotFoundException(id);
         }
-        System.out.println("Deleted product with id:" + id);
         productRepository.deleteById(id);
+        log.info("Deleted product id={}", id);
     }
 
     @Override
     public List<ProductResponse> findAll() {
-        return productRepository.findAll().stream().map(this::mapProductToResponse).toList();
+        List<ProductResponse> list = productRepository.findAll()
+                .stream()
+                .map(this::mapProductToResponse)
+                .toList();
+        log.debug("Listed products count={}", list.size());
+        return list;
     }
-
-//    @Override
-//    public ProductResponse decreaseStock(Long id, int qty) {
-//        if (id == null) {
-//            throw new IllegalArgumentException("id cannot be null");
-//        }
-//        if (qty <= 0) {
-//            throw new IllegalArgumentException("qty cannot be negative");
-//        }
-//        int changed = productRepository.decreaseStock(id, qty);
-//        if (changed == 0) {
-//            if (!productRepository.existsById(id)) {
-//                throw new RuntimeException("Product does not exist with id: " + id);
-//            }
-//            throw new RuntimeException("Insufficient stock for product id: " + id);
-//        }
-//        Product refreshed = productRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("Product does not exist with id: " + id));
-//        System.out.println("Stock decreased");
-//        return mapProductToResponse(refreshed);
-//    }
-//
-//    @Override
-//    public ProductResponse increaseStock(Long id, int qty) {
-//        if (id == null) {
-//            throw new IllegalArgumentException("id cannot be null");
-//        }
-//        if (qty <= 0) {
-//            throw new IllegalArgumentException("qty cannot be negative");
-//        }
-//        int changed = productRepository.increaseStock(id, qty);
-//        if (changed == 0) {
-//            if (!productRepository.existsById(id)) {
-//                throw new RuntimeException("Product does not exist with id: " + id);
-//            }
-//            throw new RuntimeException("Insufficient stock for product id: " + id);
-//        }
-//        Product refreshed = productRepository.findById(id)
-//                .orElseThrow(() -> new RuntimeException("Product does not exist with id: " + id));
-//        System.out.println("Stock increased");
-//        return mapProductToResponse(refreshed);
-//    }
 
     private void validate(ProductRequest p) {
         if (p.getName() == null || p.getName().isBlank()) {
+            log.warn("Validation failed: name is blank");
             throw new ProductValidationException("Product name is mandatory");
         }
         BigDecimal price = p.getPrice();
         if (price == null || price.signum() < 0) {
+            log.warn("Validation failed: invalid price value={}", price);
             throw new ProductValidationException("Price must be zero or positive");
         }
         Integer stock = p.getStock();
         if (stock == null || stock < 0) {
+            log.warn("Validation failed: invalid stock value={}", stock);
             throw new ProductValidationException("Stock must be zero or positive");
         }
     }
 
-
-    // request > product
+    // request -> entity
     private Product mapRequestToEntity(ProductRequest req, Product product) {
         product.setName(req.getName());
         product.setDescription(req.getDescription());
@@ -137,7 +116,7 @@ public class ProductServiceImpl implements ProductService {
         return product;
     }
 
-    // product > response
+    // entity -> response
     private ProductResponse mapProductToResponse(Product p) {
         return new ProductResponse(
                 p.getId(),
@@ -147,6 +126,4 @@ public class ProductServiceImpl implements ProductService {
                 p.getStock()
         );
     }
-
-
 }
