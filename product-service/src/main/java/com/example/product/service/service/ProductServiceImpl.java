@@ -1,10 +1,13 @@
 package com.example.product.service.service;
+import com.example.product.service.exception.ProductAlreadyExistsException;
+import com.example.product.service.exception.ProductNameInUseException;
 import com.example.product.service.exception.ProductNotFoundException;
 
 
 import com.example.common.dto.ProductRequest;
 import com.example.common.dto.ProductResponse;
 import com.example.product.service.entity.Product;
+import com.example.product.service.exception.ProductValidationException;
 import com.example.product.service.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,7 +32,7 @@ public class ProductServiceImpl implements ProductService {
         validate(req);
 
         if (productRepository.existsByName(req.getName())) {
-            throw new RuntimeException("Product already exists: " + req.getName());
+            throw new ProductAlreadyExistsException(req.getName());
         }
 
         Product saved = productRepository.save(mapRequestToEntity(req, new Product()));
@@ -46,7 +49,7 @@ public class ProductServiceImpl implements ProductService {
 
         if (!existing.getName().equals(req.getName())
                 && productRepository.existsByName(req.getName())) {
-            throw new RuntimeException("Another product already uses name: " + req.getName());
+            throw new ProductNameInUseException(req.getName());
         }
 
         Product saved = productRepository.save(mapRequestToEntity(req, existing));
@@ -112,17 +115,18 @@ public class ProductServiceImpl implements ProductService {
 
     private void validate(ProductRequest p) {
         if (p.getName() == null || p.getName().isBlank()) {
-            throw new IllegalArgumentException("Product name cannot be blank");
+            throw new ProductValidationException("Product name is mandatory");
         }
         BigDecimal price = p.getPrice();
         if (price == null || price.signum() < 0) {
-            throw new IllegalArgumentException("Price must be zero or positive");
+            throw new ProductValidationException("Price must be zero or positive");
         }
         Integer stock = p.getStock();
         if (stock == null || stock < 0) {
-            throw new IllegalArgumentException("Stock must be zero or positive");
+            throw new ProductValidationException("Stock must be zero or positive");
         }
     }
+
 
     // request > product
     private Product mapRequestToEntity(ProductRequest req, Product product) {
