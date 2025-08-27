@@ -1,4 +1,6 @@
 package com.example.product.service.service;
+import com.example.product.service.exception.ProductNotFoundException;
+
 
 import com.example.common.dto.ProductRequest;
 import com.example.common.dto.ProductResponse;
@@ -18,7 +20,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponse findById(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+                .orElseThrow(() -> new ProductNotFoundException(id));
         return mapProductToResponse(product);
     }
 
@@ -40,7 +42,7 @@ public class ProductServiceImpl implements ProductService {
         validate(req);
 
         Product existing = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product does not exist with id: " + id));
+                .orElseThrow(() -> new ProductNotFoundException(id));
 
         if (!existing.getName().equals(req.getName())
                 && productRepository.existsByName(req.getName())) {
@@ -55,7 +57,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void deleteProduct(Long id) {
         if (!productRepository.existsById(id)) {
-            throw new RuntimeException("Product  does not exist with id: " + id);
+            throw new ProductNotFoundException(id);
         }
         System.out.println("Deleted product with id:" + id);
         productRepository.deleteById(id);
