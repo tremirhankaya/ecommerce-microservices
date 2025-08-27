@@ -6,19 +6,13 @@ import java.math.BigDecimal;
 
 public class ProductRequest {
 
-    @NotBlank(message = "name cannot be blank")
     private String name;
 
-    @Size(max = 1000, message = "description max 1000 chars")
     private String description;
 
-    @NotNull(message = "price is required")
-    @DecimalMin(value = "0.0", inclusive = true, message = "price must be >= 0")
 
     private BigDecimal price;
 
-    @NotNull(message = "stock is required")
-    @Min(value = 0, message = "stock must be >= 0")
     private Integer stock;
 
     // getters & setters
